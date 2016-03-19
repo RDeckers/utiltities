@@ -1,11 +1,13 @@
 rwildcard=$(foreach d,$(wildcard $1*),$(call rwildcard,$d/,$2) $(filter $(subst *, %,$2),$d))
 directories=$(sort $(dir $(wildcard $/*)))
 ifeq ($(OS),Windows_NT)
-	REPORT = @echo -e $1"
+	FIX_PATH = $(subst /,\,$1)
+	REPORT = @echo $1"
 	CHK_DIR_EXISTS = if not exist "$(strip $1)" mkdir "$(strip $1)"
 	NUKE = rmdir /s /q
-	COPY_DIR = xcopy $1 $2 /E /H /Y
-	FIX_PATH = $(subst /,\,$1)
+	COPY_DIR = xcopy $(call FIX_PATH,$1 $2) /E /H /Y
+	COPY_CONTENT = xcopy /s $(call FIX_PATH,$1 $2)
+	COPY = xcopy $(call FIX_PATH,$1 $2) /Y
 	INSTALL_LIB_DIR := Z:/lib/
 	INSTALL_BIN_DIR := Z:/bin/
 	INSTALL_INCLUDE_DIR := Z:/include/
@@ -14,7 +16,9 @@ else
 	REPORT = @echo -e "\e[4;1;37m$1\033[0m"
 	CHK_DIR_EXISTS = test -d $1 || mkdir -p $1
 	NUKE = rm -r $1
-	COPY_DIR = cp -rv $1 $2
+	COPY_DIR = cp -r $1 $2
+	COPY_CONTENT cp -r $1/* $2
+	COPY = cp $1 $2
 	FIX_PATH = $1
 	INSTALL_LIB_DIR := ~/lib/
 	INSTALL_BIN_DIR := ~/bin/
@@ -47,8 +51,8 @@ lib: $(OBJ_FILES)
 
 install: lib
 	$(call REPORT, Installing files...)
-	cp $(LIB_DIR)/lib$(LIB_NAME)$(LIB_SUFFIX) $(INSTALL_LIB_DIR)
-	cp -r $(PROJECT_DIR)headers/* $(INSTALL_INCLUDE_DIR)
+	$(call COPY, $(LIB_DIR)/lib$(LIB_NAME)$(LIB_SUFFIX),$(INSTALL_LIB_DIR))
+	$(call COPY_CONTENT, $(PROJECT_DIR)headers,$(INSTALL_INCLUDE_DIR))
 
 all : lib examples
 
