@@ -17,7 +17,7 @@ else
 	CHK_DIR_EXISTS = test -d $1 || mkdir -p $1
 	NUKE = rm -r $1
 	COPY_DIR = cp -r $1 $2
-	COPY_CONTENT cp -r $1/* $2
+	COPY_CONTENT = cp -r $1/* $2
 	COPY = cp $1 $2
 	FIX_PATH = $1
 	INSTALL_LIB_DIR := ~/lib/
