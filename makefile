@@ -2,11 +2,11 @@ rwildcard=$(foreach d,$(wildcard $1*),$(call rwildcard,$d/,$2) $(filter $(subst 
 directories=$(sort $(dir $(wildcard $/*)))
 ifeq ($(OS),Windows_NT)
 	FIX_PATH = $(subst /,\,$1)
-	REPORT = @echo $1"
+	REPORT = @echo $1
 	CHK_DIR_EXISTS = if not exist "$(strip $1)" mkdir "$(strip $1)"
 	NUKE = rmdir /s /q
 	COPY_DIR = xcopy $(call FIX_PATH,$1 $2) /E /H /Y
-	COPY_CONTENT = xcopy /s $(call FIX_PATH,$1 $2)
+	COPY_CONTENT = xcopy /s /Y $(call FIX_PATH,$1 $2)
 	COPY = xcopy $(call FIX_PATH,$1 $2) /Y
 	INSTALL_LIB_DIR := Z:/lib/
 	INSTALL_BIN_DIR := Z:/bin/
