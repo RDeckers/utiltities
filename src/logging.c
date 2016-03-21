@@ -4,7 +4,11 @@
 
 FILE* DEFAULT_REPORT_STREAM = NULL;
 int REPORT_TIMESTAMP = 0;
+#ifndef _WIN32
 int REPORT_W_COLORS = 1;
+#else
+int REPORT_W_COLORS = 0; //Windows cmd doesn't support ansi colors by default, if you want them install ansicon (http://adoxa.altervista.org/ansicon/)
+#endif
 
 static void vfreportf(FILE* stream, report_level_t level, int timestamped, int colored, const char* format, va_list ap);
 
