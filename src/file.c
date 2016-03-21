@@ -12,46 +12,46 @@ void set_cwdir_to_bin_dir(){
   chdir(get_base_path());
 }
 const char* get_base_path(){
-#ifdef _WIN32
+  #ifdef _WIN32
   static char *path = NULL;
   if(NULL == path){
-  DWORD path_size = 1024;
-  char* path = malloc(1024);
-  for (;;){//http://stackoverflow.com/a/9112949/6019199
-    memset(path, 0, path_size);
-    DWORD result = GetModuleFileName(0, path, path_size - 1);
-    DWORD last_error = GetLastError();
-    if (0 == result){
-      free(path);
-      path = 0;
-      break;
-    } else if (result == path_size - 1){
-      free(path);
-      /* May need to also check for ERROR_SUCCESS here if XP/2K */
-      if (ERROR_INSUFFICIENT_BUFFER != last_error){
+    DWORD path_size = 1024;
+    path = malloc(path_size);
+    for (;;){//http://stackoverflow.com/a/9112949/6019199
+      memset(path, 0, path_size);
+      DWORD result = GetModuleFileName(0, path, path_size - 1);
+      DWORD last_error = GetLastError();
+      if (0 == result){
+        free(path);
         path = 0;
         break;
+      } else if (result == path_size - 1){
+        free(path);
+        /* May need to also check for ERROR_SUCCESS here if XP/2K */
+        if (ERROR_INSUFFICIENT_BUFFER != last_error){
+          path = 0;
+          break;
+        }
+        path_size = path_size * 2;
+        path = malloc(path_size);
       }
-      path_size = path_size * 2;
-      path = malloc(path_size);
+      else{
+        break;
+      }
     }
-    else{
-      break;
-    }
-  }
-  char *end_slash = strrchr(path, '/');
-  char *end_backslash = strrchr(path, '\\');
-  char *end_slashes = end_slash > end_backslash? end_slash : end_backslash;
-  *end_slashes = 0;
+    char *end_slash = strrchr(path, '/');
+    char *end_backslash = strrchr(path, '\\');
+    char *end_slashes = end_slash >= end_backslash? end_slash : end_backslash;
+    end_slashes[0] = '\0';
   }
   return path;
-#else
+  #else
   static char *buffer = NULL;
   if(NULL == buffer){
     buffer = dirname(realpath("/proc/self/exe", NULL)); //leaky, realpath mallocs and dirname never frees, but this should only happen once for the lifetime of the program and live as long as that.
   }
   return buffer;
-#endif
+  #endif
 }
 
 char* file_to_string(const char* filename, size_t max_bytes, char **output){
@@ -79,7 +79,7 @@ char* file_to_string(const char* filename, size_t max_bytes, char **output){
   if(elements_read != size-1){
     report(FAIL, "Read %lu instead of %lu bytes, errno: %s", elements_read, size, strerror(errno));
     if(dynamic_buffer)
-      free(*output);
+    free(*output);
     return NULL;
   }
   (*output)[size-1] = '\0';
