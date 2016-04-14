@@ -1,4 +1,13 @@
 #include <time.h>
+#ifdef __cplusplus
+#define EXTERN_C extern "C" {
+#define EXTERN_C_END }
+#else
+#define EXTERN_C
+#define EXTERN_C_END
+#endif
+
+EXTERN_C
 
 //returns the time passed between start and end in ns.
 double time_diff(struct timespec *start, struct timespec *end);
@@ -15,3 +24,4 @@ double tock(struct timespec *T);
 //   F ;\
 //   elapsed_since(&T);\
 // })
+EXTERN_C_END
