@@ -1,4 +1,9 @@
 #include <stdio.h>
+#ifndef _UTIL_LOG_H
+#define _UTIL_LOG_H
+#ifdef __cplusplus
+extern "C"{
+#endif
 
 typedef enum{
   PASS,
@@ -15,3 +20,8 @@ void report(report_level_t level, const char* format, ...) __attribute__((format
 void reportf(report_level_t level, int timestamped, int colored, const char* format, ...) __attribute__((format(printf, 4, 5)));
 void freport(FILE* stream, report_level_t level, const char* format, ...) __attribute__((format(printf, 3, 4)));
 void freportf(FILE* stream, report_level_t level, int timestamped, int colored, const char* format, ...) __attribute__((format(printf, 5, 6)));
+
+#ifdef __cplusplus
+}
+#endif
+#endif

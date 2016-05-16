@@ -1,5 +1,9 @@
+#ifndef _UTIL_TIME_H
+#define _UTIL_TIME_H
 #include <time.h>
-
+#ifdef __cplusplus
+extern "C"{
+#endif
 //returns the time passed between start and end in ns.
 double time_diff(struct timespec *start, struct timespec *end);
 //returns the time in ns elapsed since T.
@@ -15,3 +19,4 @@ double tock(struct timespec *T);
 //   F ;\
 //   elapsed_since(&T);\
 // })
+#endif

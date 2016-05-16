@@ -1,6 +1,7 @@
 #include <stdint.h>
 #include <immintrin.h>
-
+#ifdef _UTIL_VEC_H
+#define _UTIL_VEC_H
 typedef int8_t v32c __attribute__ ((vector_size (32)));
 typedef int8_t v16c __attribute__ ((vector_size (16)));
 typedef int8_t v8c __attribute__ ((vector_size (8)));
@@ -23,3 +24,4 @@ typedef float v2f __attribute__ ((vector_size (8)));
 
 typedef double v4d __attribute__ ((vector_size (32)));
 typedef double v2d __attribute__ ((vector_size (16)));
+#endif

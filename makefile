@@ -43,7 +43,6 @@ LIB_NAME := utilities
 LD_FLAGS += --std=gnu99 -march=native
 C_FLAGS += --std=gnu99 -O2 -pipe -march=native -I$(PROJECT_DIR)headers
 
-
 lib: $(OBJ_FILES)
 	$(call REPORT,Building $@)
 	$(call CHK_DIR_EXISTS, $(LIB_DIR))
