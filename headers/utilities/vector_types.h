@@ -1,7 +1,7 @@
-#include <stdint.h>
-#include <immintrin.h>
 #ifndef _UTIL_VEC_H
 #define _UTIL_VEC_H
+#include <stdint.h>
+#include <immintrin.h>
 typedef int8_t v32c __attribute__ ((vector_size (32)));
 typedef int8_t v16c __attribute__ ((vector_size (16)));
 typedef int8_t v8c __attribute__ ((vector_size (8)));
