@@ -19,4 +19,7 @@ double tock(struct timespec *T);
 //   F ;\
 //   elapsed_since(&T);\
 // })
+#ifdef __cplusplus
+extern }
+#endif
 #endif

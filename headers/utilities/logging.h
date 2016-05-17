@@ -5,6 +5,7 @@
 extern "C"{
 #endif
 
+EXTERN_C
 typedef enum{
   PASS,
   INFO,

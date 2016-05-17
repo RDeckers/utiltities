@@ -41,7 +41,7 @@ OBJ_FILES = $(patsubst $(SRC_DIR)/%.c,$(OBJ_DIR)/%.o,$(C_FILES))
 LIB_NAME := utilities
 
 LD_FLAGS += --std=gnu99 -march=native
-C_FLAGS += --std=gnu99 -O2 -pipe -march=native -I$(PROJECT_DIR)headers
+C_FLAGS += --std=gnu99 -O2 -pipe -march=native -I$(PROJECT_DIR)headers -I$(INSTALL_INCLUDE_DIR)
 
 lib: $(OBJ_FILES)
 	$(call REPORT,Building $@)
