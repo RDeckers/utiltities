@@ -1,8 +1,12 @@
 #include <utilities/file.h>
 #include <utilities/logging.h>
+
 #ifdef _WIN32
 #include <windows.h>
 #endif
+
+#include <unistd.h>
+#include <libgen.h>
 #include <sys/stat.h>
 #include <string.h>
 #include <stdlib.h>
@@ -54,7 +58,7 @@ const char* get_base_path(){
   #endif
 }
 
-char* file_to_string(const char* filename, size_t max_bytes, char **output){
+char* file_to_string(const char* filename, size_t max_bytes, char **const output){
   FILE *pFile = fopen (filename, "rb");
   if (!pFile){
     report(FAIL, "Couldn't open %s: %s!", filename,strerror(errno));
@@ -86,7 +90,7 @@ char* file_to_string(const char* filename, size_t max_bytes, char **output){
   return *output;
 }
 
-int relative_to_full_path(const char* relative_filepath, size_t max_bytes, const char **output){
+int relative_to_full_path(const char* relative_filepath, size_t max_bytes, char **const output){
   const char* basepath = get_base_path();
   size_t basepath_size = strlen(basepath);
   size_t relative_filepath_size = strlen(relative_filepath);
