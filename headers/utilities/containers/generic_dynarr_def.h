@@ -3,6 +3,8 @@
 
 #define DEFINE_DYNARR(SUFFIX, TYPE)\
   typedef struct dynarr##SUFFIX{TYPE *base; size_t count; size_t size;}dynarr##SUFFIX##_t;\
+  int dynarr##SUFFIX##_init(dynarr##SUFFIX##_t* dynarr, unsigned Size);\
+  void dynarr##SUFFIX##_deinit(dynarr##SUFFIX##_t* dynarr);\
   dynarr##SUFFIX##_t* dynarr##SUFFIX##_new(unsigned Size);\
   void dynarr##SUFFIX##_free(dynarr##SUFFIX##_t *dynarr);\
   extern inline void dynarr##SUFFIX##_force_push(dynarr##SUFFIX##_t *dynarr, TYPE x);\
@@ -14,22 +16,34 @@
   int dynarr##SUFFIX##_shrink_to_fit(dynarr##SUFFIX##_t *dynarr);
 
 #define IMPLEMENT_DYNARR(SUFFIX, TYPE)\
+ int dynarr##SUFFIX##_init(dynarr##SUFFIX##_t* dynarr, unsigned Size){\
+  Size  = 0 == Size? 128 : Size;\
+  dynarr->base = malloc(sizeof(TYPE)*Size);\
+  if(!dynarr->base){\
+    return 0;\
+  }\
+  dynarr->count = 0;\
+  dynarr->size = Size;\
+  return 1;\
+ }\
+\
+ void dynarr##SUFFIX##_deinit(dynarr##SUFFIX##_t* dynarr){\
+   free(dynarr->base);\
+ }\
+\
   dynarr##SUFFIX##_t* dynarr##SUFFIX##_new(unsigned Size){\
     Size  = 0 == Size? 128 : Size;\
     dynarr##SUFFIX##_t* ret = malloc(sizeof(dynarr##SUFFIX##_t));\
-    if(!ret) return ret;\
-    ret->base = malloc(sizeof(TYPE)*Size);\
-    if(!ret->base){\
+    if(!ret) return NULL;\
+    if(!dynarr##SUFFIX##_init(ret, Size)){\
       free(ret);\
       return NULL;\
     }\
-    ret->count = 0;\
-    ret->size = Size;\
-	return ret;\
+	  return ret;\
   }\
 \
   void dynarr##SUFFIX##_free(dynarr##SUFFIX##_t *dynarr){\
-    free(dynarr->base);\
+    dynarr##SUFFIX##_deinit(dynarr);\
     free(dynarr);\
   }\
 \
