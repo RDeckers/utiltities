@@ -12,6 +12,42 @@
 #include <stdlib.h>
 #include <errno.h>
 
+ssize_t getline(char **buffer, size_t *buffer_size, FILE *handle){
+  if((!*buffer) && (!*buffer_size) ){
+    *buffer = malloc(sizeof(char)*128);
+    if(!buffer){
+      report(FAIL, "%s Could not allocate buffer: %s (%d)", __func__, strerror(errno), errno);
+      *buffer_size = 0;
+      return -1;
+    }
+    *buffer_size = 128;
+  }
+  if(!*buffer_size){
+    return 0;
+  }
+  size_t offset = 0;
+  (*buffer)[*buffer_size - 1] = 0;
+  if(0 == fgets(*buffer, *buffer_size, handle)){
+    return -1; //error or EOF before anything read.
+  }
+  while((*buffer)[*buffer_size -1] != 0){
+    report(WARN, "buffer not big enough (%u), resizing...", *buffer_size);
+    *buffer = realloc((*buffer), *buffer_size *2);
+    if(!buffer){
+      report(FAIL, "%s Could not allocate buffer: %s (%d)", __func__, strerror(errno), errno);
+      *buffer_size = 0;
+      return -1;
+    }
+    offset += *buffer_size;
+    *buffer_size *= 2;
+    (*buffer)[*buffer_size - 1] = 0;
+    if(0 == fgets((*buffer)+offset, *buffer_size, handle)){
+      return -1;//is this correct? could be a failure but could also be the file terminating without a newline?
+    }
+  }
+  return offset + strlen((*buffer)+offset);
+}
+
 void set_cwdir_to_bin_dir(){
   chdir(get_base_path());
 }
