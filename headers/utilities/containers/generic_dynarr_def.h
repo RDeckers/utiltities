@@ -7,13 +7,24 @@
   void dynarr##SUFFIX##_deinit(dynarr##SUFFIX##_t* dynarr);\
   dynarr##SUFFIX##_t* dynarr##SUFFIX##_new(unsigned Size);\
   void dynarr##SUFFIX##_free(dynarr##SUFFIX##_t *dynarr);\
-  extern inline void dynarr##SUFFIX##_force_push(dynarr##SUFFIX##_t *dynarr, TYPE x);\
-  extern inline void dynarr##SUFFIX##_force_push_array(dynarr##SUFFIX##_t *dynarr, TYPE *array, size_t n);\
+  inline void dynarr##SUFFIX##_force_push(dynarr##SUFFIX##_t *dynarr, TYPE x){\
+    *((dynarr->base)+(dynarr->count++)) = x;\
+  }\
+\
+  inline void dynarr##SUFFIX##_force_push_array(dynarr##SUFFIX##_t *dynarr, TYPE *array, size_t n){\
+    memmove(dynarr->base+(dynarr->count), array, sizeof(TYPE)*n);\
+    dynarr->count += n;\
+  }\
+  \
   int dynarr##SUFFIX##_push(dynarr##SUFFIX##_t *dynarr, TYPE x);\
   int dynarr##SUFFIX##_push_array(dynarr##SUFFIX##_t *dynarr, TYPE *array, size_t n);\
-  extern inline TYPE dynarr##SUFFIX##_force_pop(dynarr##SUFFIX##_t *dynarr);\
+  inline TYPE dynarr##SUFFIX##_force_pop(dynarr##SUFFIX##_t *dynarr){\
+    return *(dynarr->base+(--(dynarr->count)));\
+  }\
+\
   int dynarr##SUFFIX##_pop(dynarr##SUFFIX##_t *dynarr, TYPE *y);\
-  int dynarr##SUFFIX##_shrink_to_fit(dynarr##SUFFIX##_t *dynarr);
+  int dynarr##SUFFIX##_shrink_to_fit(dynarr##SUFFIX##_t *dynarr);\
+  int dynarr##SUFFIX##_resize(dynarr##SUFFIX##_t *dynarr, unsigned size);
 
 #define IMPLEMENT_DYNARR(SUFFIX, TYPE)\
  int dynarr##SUFFIX##_init(dynarr##SUFFIX##_t* dynarr, unsigned Size){\
@@ -47,36 +58,23 @@
     free(dynarr);\
   }\
 \
-  extern inline void dynarr##SUFFIX##_force_push(dynarr##SUFFIX##_t *dynarr, TYPE x){\
-    *((dynarr->base)+(dynarr->count++)) = x;\
-  }\
-\
-  extern inline void dynarr##SUFFIX##_force_push_array(dynarr##SUFFIX##_t *dynarr, TYPE *array, size_t n){\
-    memmove(dynarr->base+(dynarr->count), array, sizeof(TYPE)*n);\
-    dynarr->count += n;\
-  }\
-  \
   int dynarr##SUFFIX##_push(dynarr##SUFFIX##_t *dynarr, TYPE x){\
     if(dynarr->count >= dynarr->size){\
-      TYPE *new_base = realloc(dynarr->base, sizeof(TYPE)*dynarr->size*2);\
-      if(NULL == new_base){return - 1;}\
-      else{dynarr->base = new_base; dynarr->size *= 2;}\
+      dynarr->base = realloc(dynarr->base, sizeof(TYPE)*dynarr->size*2);\
+      if(NULL == dynarr->base){return - 1;}\
+      else{dynarr->size *= 2;}\
     }\
     dynarr##SUFFIX##_force_push(dynarr, x);\
     return 0;\
   }\
   int dynarr##SUFFIX##_push_array(dynarr##SUFFIX##_t *dynarr, TYPE *array, size_t n){\
     if(dynarr->count + n >= dynarr->size){\
-      TYPE *new_base = realloc(dynarr->base, sizeof(TYPE)*(dynarr->size+n));\
-      if(NULL == new_base){return - 1;}\
-      else{dynarr->base = new_base; dynarr->size = dynarr->size+n;}\
+      dynarr->base = realloc(dynarr->base, sizeof(TYPE)*(dynarr->size+n));\
+      if(NULL == dynarr->base){return - 1;}\
+      else{dynarr->size = dynarr->size+n;}\
     }\
     dynarr##SUFFIX##_force_push_array(dynarr, array, n);\
     return 0;\
-  }\
-\
-  extern inline TYPE dynarr##SUFFIX##_force_pop(dynarr##SUFFIX##_t *dynarr){\
-    return *(dynarr->base+(--(dynarr->count)));\
   }\
 \
   int dynarr##SUFFIX##_pop(dynarr##SUFFIX##_t *dynarr, TYPE *y){\
@@ -87,9 +85,21 @@
   }\
   int dynarr##SUFFIX##_shrink_to_fit(dynarr##SUFFIX##_t *dynarr){\
     if(dynarr->count != dynarr->size){\
-      TYPE *new_base = realloc(dynarr->base, sizeof(TYPE)*dynarr->count);\
-      if(NULL == new_base){return - 1;}\
-      else{dynarr->base = new_base; dynarr->size = dynarr->count;}\
+      dynarr->base = realloc(dynarr->base, sizeof(TYPE)*dynarr->count);\
+      if(dynarr->base == NULL){return - 1;}\
+      else{dynarr->size = dynarr->count;}\
+    }\
+    return 0;\
+  }\
+  \
+  int dynarr##SUFFIX##_resize(dynarr##SUFFIX##_t *dynarr, unsigned size){\
+    unsigned capacity = dynarr->size;\
+    if(size > capacity){\
+      dynarr->base = realloc(dynarr->base, sizeof(TYPE)*size);\
+      if(!dynarr->base){\
+        return -1;\
+      }\
+      dynarr->size = size;\
     }\
     return 0;\
   }
