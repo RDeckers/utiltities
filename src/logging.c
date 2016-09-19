@@ -3,7 +3,7 @@
 #include <stdarg.h>
 
 FILE* DEFAULT_REPORT_STREAM = NULL;
-int REPORT_TIMESTAMP = 0;
+int REPORT_W_TIMESTAMPS = 0;
 #ifndef _WIN32
 int REPORT_W_COLORS = 1;
 #else
@@ -19,7 +19,7 @@ void report(
 ){
   va_list ap;
   va_start(ap, format);
-  vfreportf(DEFAULT_REPORT_STREAM, level, REPORT_TIMESTAMP, REPORT_W_COLORS, format, ap);
+  vfreportf(DEFAULT_REPORT_STREAM, level, REPORT_W_TIMESTAMPS, REPORT_W_COLORS, format, ap);
   va_end(ap);
 }
 
@@ -44,7 +44,7 @@ void freport(
 ){
   va_list ap;
   va_start(ap, format);
-  vfreportf(stream, level, REPORT_TIMESTAMP, REPORT_W_COLORS, format, ap);
+  vfreportf(stream, level, REPORT_W_TIMESTAMPS, REPORT_W_COLORS, format, ap);
   va_end(ap);
 }
 

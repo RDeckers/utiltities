@@ -13,7 +13,7 @@ typedef enum{
 }report_level_t;
 
 extern FILE* DEFAULT_REPORT_STREAM;
-extern int REPORT_TIMESTAMP;
+extern int REPORT_W_TIMESTAMPS;
 extern int REPORT_W_COLORS;
 
 void report(report_level_t level, const char* format, ...) __attribute__((format(printf, 2, 3)));
